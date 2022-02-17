@@ -29,7 +29,21 @@ export class TaskServices{
         targetTask.taskStatus=tstatus;
         targetTask.user=tuser;
         targetTask.username=tuser;
-        
         return {...targetTask};
+    }
+
+    deletetask(tname:string)
+    {
+        const targetTask=this.tasks.find((tas) => tas.taskName === tname);
+        if(!targetTask){
+            return 'No such task found';
+        }
+        else{
+            var arr=this.tasks
+            this.tasks=this.tasks.filter(function(task,index, arr){
+                return task!=targetTask;
+            })
+            return 'Task deleted successfully';
+        }
     }
 }
