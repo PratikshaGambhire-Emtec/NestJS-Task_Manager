@@ -1,10 +1,16 @@
+/* eslint-disable prettier/prettier */
 import { Module } from "@nestjs/common";
-import { TasksController } from "./tasks.controller";
-import { TaskServices } from "./tasks.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { TaskRepository } from "./task.respository";
+import { TaskController } from "./tasks.controller";
+import { TaskService } from "./tasks.service";
 
 @Module({
-    controllers:[TasksController],
-    providers:[TaskServices],
+
+    //use typeorm to create the table task using repo
+    imports:[TypeOrmModule.forFeature([TaskRepository])],
+    controllers:[TaskController],
+    providers:[TaskService ],
 
 })
 
