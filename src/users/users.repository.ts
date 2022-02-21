@@ -23,12 +23,21 @@ export class UserRepository extends Repository<UserEntity>{
 
         //find the user by user name
         const user = await this.findOne({ userName })
-        console.log(user);
+        //console.log(user);
 
         //check if user exists
-        if (user && user.validatePassword(userPassword)){
+        //const passwordValidation = user.validatePassword(userPassword)
+        //console.log(`password validation = ${passwordValidation}`)
+        if (!user){
             return null;
         }
+
+        // const passwordValidation = user.validatePassword(userPassword)
+        // console.log(`password validation = ${passwordValidation}`)
+        if(!user.validatePassword(userPassword)){
+            return null;
+        }
+        
         return user;
     }
 }

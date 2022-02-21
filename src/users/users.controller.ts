@@ -1,5 +1,9 @@
-import { Controller,Post, Body, Get, Param, Patch, Delete, ValidationPipe, UsePipes} from "@nestjs/common";
+import { Controller,Post, Body, Get, Param, Patch, Delete, ValidationPipe, UsePipes, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { resourceUsage } from "process";
+import { UserEntity } from "src/entity/user.entity";
 import { AuthCredentialsDTO } from "./dto/auth.credentials.dto";
+import { GetUser } from "./get.user.decorator";
 import { UserServices } from "./users.service";
 
 
@@ -9,9 +13,12 @@ export class UserController{
     constructor(
         private userService: UserServices){}
 
-    @Get()
-    getProfile(){
-        
+    @Get('/profile')
+    @UseGuards(AuthGuard())
+    getProfile(@GetUser() user: UserEntity) {
+        return user;
+      
+
     }
 
 

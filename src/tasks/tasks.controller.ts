@@ -1,4 +1,7 @@
-import { Controller,Post, Body, Get, Param, Patch, Delete, Query, ValidationPipe, UsePipes} from "@nestjs/common";
+import { Controller,Post, Body,UseGuards, Get, Param, Patch, Delete, Query, ValidationPipe, UsePipes} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { UserEntity } from "src/entity/user.entity";
+import { GetUser } from "src/users/get.user.decorator";
 import { CreateTaskDTO } from "./dto/create.task.dto";
 import { SearchTaskDTO } from "./dto/search.task.dto";
 import { TaskStatus } from "./tasks.enum";
@@ -7,6 +10,7 @@ import { TaskService } from "./tasks.service";
 
 
 @Controller('task')
+@UseGuards(AuthGuard())
 export class TaskController {
     // dependency injection
     // TaskController is dependent on TaskService
@@ -14,19 +18,22 @@ export class TaskController {
   
     @Post()
     @UsePipes(ValidationPipe)
-    createTask(@Body() createTaskDto: CreateTaskDTO) {
+    createTask(
+      @GetUser() user: UserEntity,
+      @Body() createTaskDto: CreateTaskDTO) {
       // 1. create a new task
       // 2. return all tasks
-      return this.taskService.createTask(createTaskDto);
+      return this.taskService.createTask(createTaskDto, user);
     }
   
     @Get()
-    getTasks(@Query() searchTaskDto: SearchTaskDTO) {
-      return this.taskService.getTasks(searchTaskDto);
+    getTasks(@GetUser() user: UserEntity, @Query() searchTaskDto: SearchTaskDTO) {
+      return this.taskService.getTasks(searchTaskDto, user);
     }
   
     @Patch('/:id/:status')
     updateTaskStatus(
+      @GetUser() user: UserEntity,
       @Param('id') id: string,
       @Param('status') status: TaskStatus,
     ) {
@@ -34,7 +41,9 @@ export class TaskController {
     }
   
     @Delete('/:id')
-    deleteTask(@Param('id') id: string) {
+    deleteTask(
+      @GetUser() user: UserEntity,
+      @Param('id') id: string) {
       return this.taskService.deleteTask(id);
     }
 

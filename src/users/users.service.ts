@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthCredentialsDTO } from "./dto/auth.credentials.dto";
 import { JwtPayload } from "./jwt.payload";
@@ -12,20 +13,32 @@ export class UserServices{
     constructor(
         @InjectRepository(UserRepository)
         private userRepository: UserRepository,
-    ){}
+        
+        //for creating jwt token
+        private jwtService: JwtService,
+    
+    
+        ){}
     async signup(authcredentialsDto: AuthCredentialsDTO) {
         return this.userRepository.signup(authcredentialsDto);
     }
     async signin(authcredentialsDto: AuthCredentialsDTO) {
-    const result =await this.userRepository.signin(authcredentialsDto);
+    const user =await this.userRepository.signin(authcredentialsDto);
         
-    if(!result){
+    if(!user){
         throw new NotFoundException('user not found ')
     }
- 
+  
     //create the JWT token
-    const payload: JwtPayload= { userName: authcredentialsDto.userName }
+    const payload: JwtPayload= {
+         userName: user.userName, 
+         id:user.id, };
+    
+         //create and return the token
+    const token =  await this.jwtService.sign(payload);
 
+    //return the token
+    return{token};
 }
 
 
